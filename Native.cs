@@ -13,6 +13,9 @@ static class Native {
     [DllImport("hid.dll", SetLastError = true)] public static extern bool HidD_GetPreparsedData(SafeFileHandle h, out IntPtr pp);
     [DllImport("hid.dll")] public static extern bool HidD_FreePreparsedData(IntPtr pp);
     [DllImport("hid.dll")] public static extern int HidP_GetCaps(IntPtr pp, out HIDP_CAPS caps);
+    // 雷蛇走 feature report（控制传输 SET_REPORT/GET_REPORT），与 NUT75/SC620 的读写管道不同
+    [DllImport("hid.dll", SetLastError = true)] public static extern bool HidD_SetFeature(SafeFileHandle h, byte[] buffer, int length);
+    [DllImport("hid.dll", SetLastError = true)] public static extern bool HidD_GetFeature(SafeFileHandle h, byte[] buffer, int length);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct HIDD_ATTRIBUTES { public int Size; public ushort VendorID, ProductID, VersionNumber; }

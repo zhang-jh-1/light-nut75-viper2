@@ -4,10 +4,10 @@
     "lowThreshold": 20,
     "flashThreshold": 5,
     "autostart": false,
-    "trayOrder": ["nut75", "sc620"]
+    "trayOrder": ["nut75", "viper2pro"]
   },
   "devices": {
     "nut75": { "name": "NUT75 键盘", "icon": null },
-    "sc620": { "name": "AULA SC620鼠标", "icon": null }
+    "viper2pro": { "name": "毒蝰 V2 Pro", "icon": null }
   }
 }

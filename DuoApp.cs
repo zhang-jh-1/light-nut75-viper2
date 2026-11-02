@@ -123,7 +123,7 @@ class DuoApp : ApplicationContext {
                 if (r.Charging.HasValue) {
                     charging = r.Charging.Value;
                 } else {
-                    // SC620 无硬件标志：±1 抖动防误判，连续 2 次跳升才判充电，持平衰减、下降清零
+                    // 无硬件充电标志的设备（如老款 SC620）：±1 抖动防误判，连续 2 次跳升才判充电，持平衰减、下降清零
                     bool prevNum = st.Connected && st.Capacity >= 0;
                     bool rising = prevNum && r.Capacity > st.Capacity;
                     bool flat = prevNum && r.Capacity == st.Capacity;

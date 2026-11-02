@@ -15,3 +15,6 @@ duo-debug.log
 *.suo
 desktop.ini
 Thumbs.db
+
+# 本地笔记目录
+.workbuddy/

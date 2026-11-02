@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("DUO")]
-[assembly: AssemblyDescription("Dual-device HID battery tray for NUT75 + AULA SC620")]
+[assembly: AssemblyDescription("Dual-device HID battery tray for NUT75 + Razer Viper V2 Pro")]
 [assembly: AssemblyProduct("DUO")]
 [assembly: AssemblyCompany("Dhhh2026")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 Dhhh2026")]

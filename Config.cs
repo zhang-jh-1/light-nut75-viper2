@@ -12,7 +12,7 @@ class Config {
         public int lowThreshold = 20;
         public int flashThreshold = 5;
         public bool autostart = false;
-        public List<string> trayOrder = new List<string> { "nut75", "sc620" };
+        public List<string> trayOrder = new List<string> { "nut75", "viper2pro" };
     }
     public class DeviceMeta { public string name; public string icon; }
 

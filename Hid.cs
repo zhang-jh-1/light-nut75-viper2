@@ -1,5 +1,6 @@
 // HID 封装：枚举指定 VID/PID 的全部集合（含 usagePage/usage），重叠 IO 读写。
-// 枚举时用 access=0 打开（键盘/鼠标集合被系统独占也能读属性），仅命令通道才用读写打开。
+// 枚举时用 access=0 打开（键盘/鼠标集合被系统独占也能读属性）；
+// 命令通道先试读写，被拒再退回 0 权限（鼠标/键盘主集合只能这样打开，feature report 仍可用）。
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -9,6 +10,7 @@ static class Hid {
     public class Interface {
         public string Path;
         public ushort UsagePage, Usage;
+        public int FeatureLength; // feature report 字节数（含报告 ID），雷蛇报文靠它定长
     }
 
     public static List<Interface> Enumerate(ushort vid, ushort pid) {
@@ -39,7 +41,7 @@ static class Hid {
             IntPtr pp;
             if (Native.HidD_GetPreparsedData(h, out pp)) {
                 Native.HIDP_CAPS caps;
-                if (Native.HidP_GetCaps(pp, out caps) == 0x110000) { it.UsagePage = caps.UsagePage; it.Usage = caps.Usage; }
+                if (Native.HidP_GetCaps(pp, out caps) == 0x110000) { it.UsagePage = caps.UsagePage; it.Usage = caps.Usage; it.FeatureLength = caps.FeatureReportByteLength; }
                 Native.HidD_FreePreparsedData(pp);
             }
             return it;
@@ -50,14 +52,36 @@ static class Hid {
         var h = Native.CreateFile(path, Native.GENERIC_READ | Native.GENERIC_WRITE,
             Native.FILE_SHARE_READ | Native.FILE_SHARE_WRITE, IntPtr.Zero, Native.OPEN_EXISTING,
             Native.FILE_FLAG_OVERLAPPED, IntPtr.Zero);
+        bool rw = !h.IsInvalid;
+        if (!rw) {
+            // 键盘/鼠标主集合被系统独占（防键盘记录器），读写方式必然 ERROR_ACCESS_DENIED；
+            // 但 feature report 只需要句柄本身，0 权限打开照样能 SetFeature/GetFeature
+            h.Dispose();
+            h = Native.CreateFile(path, 0, Native.FILE_SHARE_READ | Native.FILE_SHARE_WRITE,
+                IntPtr.Zero, Native.OPEN_EXISTING, Native.FILE_FLAG_OVERLAPPED, IntPtr.Zero);
+        }
         if (h.IsInvalid) { h.Dispose(); return null; }
-        return new Device(h);
+        var dev = new Device(h);
+        dev.ReadWriteOpen = rw;
+        IntPtr pp;
+        if (Native.HidD_GetPreparsedData(h, out pp)) {
+            Native.HIDP_CAPS caps;
+            if (Native.HidP_GetCaps(pp, out caps) == 0x110000 && caps.FeatureReportByteLength > 0) dev.FeatureLength = caps.FeatureReportByteLength;
+            Native.HidD_FreePreparsedData(pp);
+        }
+        return dev;
     }
 
     public sealed class Device : IDisposable {
         readonly SafeFileHandle h;
         readonly IntPtr evt;
+        public int FeatureLength = 91; // 未知 caps 时按雷蛇最常见的 90 字节报文 + 报告 ID 取值
+        public bool ReadWriteOpen = true; // false = 只读权限打开（鼠标/键盘主集合）
         public Device(SafeFileHandle handle) { h = handle; evt = Native.CreateEvent(IntPtr.Zero, true, false, null); }
+
+        // feature report 是一问一答的控制传输：SetFeature 下发请求，GetFeature 取回设备的当前应答
+        public bool SetFeature(byte[] report) { return report.Length > 0 && Native.HidD_SetFeature(h, report, report.Length); }
+        public bool GetFeature(byte[] report) { return report.Length > 0 && Native.HidD_GetFeature(h, report, report.Length); }
 
         public bool Write(byte[] data) {
             var ov = new Native.OVERLAPPED { hEvent = evt };
