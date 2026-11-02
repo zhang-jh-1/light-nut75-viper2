@@ -2,14 +2,14 @@
 
 一个常驻系统托盘的双设备电量监视器：NUT75 键鼠 + 雷蛇毒蝰 V2 Pro，电量直接画成托盘里的点阵数字，低电变红、临近关机开始闪烁。
 
-单文件、免安装、零第三方依赖——一个 133 KB 的 `DUO.exe` 加一份配置就能跑，删掉即完全卸载。
+单文件、免安装、零第三方依赖——一个 136 KB 的 `DUO.exe` 加一份配置就能跑，删掉即完全卸载。
 
 ![platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-0078D4)
 ![.NET](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4)
-![size](https://img.shields.io/badge/exe-133%20KB-4DA5F7)
+![size](https://img.shields.io/badge/exe-136%20KB-4DA5F7)
 ![license](https://img.shields.io/badge/license-MIT-30D158)
 
-**下载**：[Releases](https://github.com/Dhhh2026/duo/releases/latest) 里的 `DUO.exe`，解压即用，无需安装。
+**下载**：[Releases](https://github.com/zhang-jh-1/light-nut75-viper2/releases/latest) 里的 `DUO.exe`，解压即用，无需安装。
 
 ## 截图
 
